@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Platform, View, Text } from 'react-native';
+import { Platform, View, Text, StyleSheet } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
+
 
 export default class SensorsComponent extends Component {
 
@@ -11,9 +12,7 @@ export default class SensorsComponent extends Component {
     this.prefixUUID = "F00011"
     this.suffixUUID = "-0451-4000-B000-000000000000"
     this.sensors = {
-      1: "LED",
-      2: "Button",
-      3: "Data"
+      1: "LED"
     }
   }
 
@@ -59,7 +58,7 @@ export default class SensorsComponent extends Component {
         return
       }
 
-      if (device.name === 'ProjectZero') {
+      if (device.name === 'ProjectZero' || device.name === 'Project Zero') {
         this.info("Connecting to TI Sensor")
         this.manager.stopDeviceScan()
         device.connect()
@@ -101,10 +100,34 @@ export default class SensorsComponent extends Component {
   }
   render() {
     return (
-      <View style = {{padding: 50}}>
-        <Text>{this.state.info}</Text>
-      
+      //header
+      <View style = {styles.screen}>
+        <View style = {styles.header}> 
+          <Text style = {styles.headerTitle}>
+            DEVICE SYNC
+          </Text>
+        </View>
       </View>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1
+  },
+  header: {
+    width: '100%',
+    height:90,
+    paddingTop: 36,
+    backgroundColor: '#1874E9',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  headerTitle: {
+    color: 'white',
+    fontSize: 18
+  }
+})
+
+
