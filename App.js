@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Platform, View, Text, StyleSheet } from 'react-native';
+import { Platform, View, Text, StyleSheet, Button } from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
-
+import Header from './components/Header'
 
 export default class SensorsComponent extends Component {
 
@@ -102,10 +102,10 @@ export default class SensorsComponent extends Component {
     return (
       //header
       <View style = {styles.screen}>
-        <View style = {styles.header}> 
-          <Text style = {styles.headerTitle}>
-            DEVICE SYNC
-          </Text>
+        <Header title = "DEVICE SYNC"/>
+        <View style = {styles.deviceList}>
+          <Text>device.name</Text>
+          <Button title = "connect" onPress={()=>{this.scanAndConnect}} />
         </View>
       </View>
     )
@@ -116,17 +116,11 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1
   },
-  header: {
+  deviceList: {
+    flexDirection: 'row',
     width: '100%',
-    height:90,
-    paddingTop: 36,
-    backgroundColor: '#1874E9',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  headerTitle: {
-    color: 'white',
-    fontSize: 18
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
   }
 })
 
