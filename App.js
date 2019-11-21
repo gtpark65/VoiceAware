@@ -10,7 +10,7 @@ export default class SensorsComponent extends Component {
   constructor() {
     super()
     this.manager = new BleManager()
-    this.state = {info: "", values: {}}
+    this.state = {info: "", values: 0, curDevice: ""}
     this.prefixUUID = "F000AA"
     this.suffixUUID = "-0451-4000-B000-000000000000"
     this.sensors = {
@@ -50,7 +50,7 @@ export default class SensorsComponent extends Component {
       this.scan()
     }
   }
-  scan() { // 어레이가 필요함 디스플레이를 하기 위해서
+  scan() { 
     this.manager.startDeviceScan(null,
                                  null, (error, device) => {
       this.info("Scanning...")
@@ -62,6 +62,10 @@ export default class SensorsComponent extends Component {
       }
     if (device.name === 'Simple Peripheral' || device.name === 'SimpleBLEPeripheral') {
       this.info("Connecting to Simple Peripheral")
+      this.manager.stopDeviceScan()
+      this.setState({
+        curDevice: device.localName
+      })
       device.connect()
         .then((device) => {
           this.info("Discovering services and characteristics")
@@ -82,8 +86,8 @@ export default class SensorsComponent extends Component {
   async read(device) {
     
       const service = this.serviceUUID(0)
-      const characteristicW = this.writeUUID(2)
-      const characteristicR = this.readUUID(1)
+      const characteristicW = this.writeUUID(0)
+      const characteristicR = this.readUUID(0)
 
       //write
       //const characteristic = await device.writeCharacteristicWithResponseForService(
@@ -91,18 +95,19 @@ export default class SensorsComponent extends Component {
       //)
       //read
       const readCharacteristic = await device.readCharacteristicForService(service,characteristicR);
-      const readValueeInRawBytes = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
-
+      const readValueInRawBytes = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
+      
       this.setState({
-        value: readValueInRawBytes
+        values: readCharacteristic.value
       });
+      /*
       device.monitorCharacteristicForService(service, characteristicR, (error, characteristic) => {
         if (error) {
           this.error(error.message)
           return
         }
-        this.updateValue(characteristic.uuid, characteristic.value)
-      })
+        this.updateValue(characteristic.uuid, readValueInRawBytes)
+      })*/
     
   }
   render() {
@@ -113,7 +118,7 @@ export default class SensorsComponent extends Component {
       <View style = {styles.screen}>
         <Header title = "DEVICE SYNC"/>
         <View style = {styles.deviceList}>
-          <Text>this.device.localName</Text>
+          <Text>{this.state.curDevice}</Text>
           <Button title = "connect" onPress={this.connect} />
           
           
@@ -121,11 +126,14 @@ export default class SensorsComponent extends Component {
 
         <View>
         <Text>{this.state.info}</Text>
-        {Object.keys(this.sensors).map((key) => {
+        <Text>{this.state.values}</Text>
+        
+        { 
+          /* {{{Object.keys(this.sensors).map((key) => { } }
           return <Text key={key}>
-                   {this.sensors[key] + ": " + (this.state.values[this.readUUID(key)] || "-")}
+                   {this.sensors[key] + ": " + this.state.values}
                  </Text>
-        })}
+        })} */}
         </View>
         
       </View>
