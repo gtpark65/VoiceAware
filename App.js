@@ -103,7 +103,7 @@ export default class SensorsComponent extends Component {
       const readValueInRawBytes = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
       
       this.setState({
-        values: readCharacteristic.value
+        values: readValueInRawBytes
       });
       /*
       device.monitorCharacteristicForService(service, characteristicR, (error, characteristic) => {
