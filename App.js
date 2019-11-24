@@ -12,14 +12,25 @@ export default class SensorsComponent extends Component {
     this.manager = new BleManager()
     this.state = {
       info: "", 
-      values: [], 
-      curDevice: ""}
+      values: {spl: 0, average: 0, min:0, max: 0}, 
+      curDevice: ""
+
+    }
     this.servicePrefixUUID = "AA0"
     this.prefixUUID = "F000AA"
     this.suffixUUID = "-0451-4000-B000-000000000000"
     this.sensors = {
-      0: "read value"
-    } 
+      0: "spl value",
+      1: "average",
+      2: "min",
+      3: "max"
+    }
+    const subscription = this.manager.onStateChange((state) => {
+      if (state === 'PoweredOn') {
+          this.scan();
+          subscription.remove();
+      }
+    }, true);
   }
 
   serviceUUID(num) {
@@ -44,22 +55,14 @@ export default class SensorsComponent extends Component {
   updateValue(key, value) {
     this.setState({values: {...this.state.values, [key]: value}})
   }
-   
-  componentWillMount() {
-    if (Platform.OS === 'ios') {
-      this.manager.onStateChange((state) => {
-        if (state === 'PoweredOn') this.scan()
-      })
-    } else {
-      this.scan()
-    }
-  }
+
   scan() { 
     this.manager.startDeviceScan(null,
                                  null, (error, device) => {
       this.info("Scanning...")
       console.log(device)
       
+      //For chage the device local name.
       this.setState({
         curDevice: device.localName
       })
@@ -90,15 +93,17 @@ export default class SensorsComponent extends Component {
   }
 
   async read(device) {
+    
       const service = this.serviceUUID(0)
       const characteristicW = this.writeUUID(0)
       const characteristicR = this.readUUID(0)
 
-      this.info("readable: " + characteristicR.isReadable)
+      //this.info("readable: " + characteristicR.isReadable)
       //write
       //const characteristic = await device.writeCharacteristicWithResponseForService(
       //   service, characteristicW, "AQ==" /* 0x01*/
       //)
+      
       //read
       const readCharacteristic = await device.readCharacteristicForService(service, characteristicR);
       const readValue1 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
@@ -106,10 +111,40 @@ export default class SensorsComponent extends Component {
       const readValue3 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(4);
       const readValue4 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(6);
 
+      //this.updateValue(readcharacteristic.uuid, readcharacteristic.value)
       
+      //this.setState({
+      //  values: [readValue1, readValue2, readValue3, readValue4]
+      //});
+
       this.setState({
-        values: [readValue1, readValue2, readValue3, readValue4]
-      });
+        values: {
+          ...this.state.values,
+          spl : readValue1
+        }
+      })
+
+      this.setState({
+        values: {
+          ...this.state.values,
+          average : readValue2
+        }
+      })
+
+      this.setState({
+        values: {
+          ...this.state.values,
+          min : readValue3
+        }
+      })
+
+      this.setState({
+        values: {
+          ...this.state.values,
+          max : readValue4
+        }
+      })
+
       /*
       device.monitorCharacteristicForService(service, characteristicR, (error, characteristic) => {
         if (error) {
@@ -121,7 +156,6 @@ export default class SensorsComponent extends Component {
     
   }
   render() {
-    
     
     return (
       //header
@@ -136,15 +170,15 @@ export default class SensorsComponent extends Component {
 
         <View>
         <Text>{this.state.info}</Text>
-        <Text>{this.state.values}</Text>
+        <Text>{this.state.values.spl}</Text>
+        <Text>{this.state.values.average}</Text>
+        <Text>{this.state.values.min}</Text>
+        <Text>{this.state.values.max}</Text>
+         
         
-        { 
-          /* {{{Object.keys(this.sensors).map((key) => { } }
-          return <Text key={key}>
-                   {this.sensors[key] + ": " + this.state.values}
-                 </Text>
-        })} */}
         </View>
+
+        
         
       </View>
     )
