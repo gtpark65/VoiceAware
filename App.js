@@ -11,6 +11,8 @@ export default class SensorsComponent extends Component {
     super()
     this.manager = new BleManager()
     this.state = {info: "", values: 0, curDevice: ""}
+    //this.prefixUUID = "F000AA"
+    this.servicePrefixUUID = "AA0"
     this.prefixUUID = "F000AA"
     this.suffixUUID = "-0451-4000-B000-000000000000"
     this.sensors = {
@@ -19,7 +21,7 @@ export default class SensorsComponent extends Component {
   }
 
   serviceUUID(num) {
-    return this.prefixUUID + num + "0" + this.suffixUUID
+    return this.servicePrefixUUID + num //+ "0" + this.suffixUUID
   }
 
   readUUID(num) {
@@ -55,17 +57,19 @@ export default class SensorsComponent extends Component {
                                  null, (error, device) => {
       this.info("Scanning...")
       console.log(device)
-                           
-      if (error) {
+      
+      this.setState({
+        curDevice: device.localName
+      })
+      
+    if (error) {
         this.error(error.message)
         return
       }
     if (device.name === 'Simple Peripheral' || device.name === 'SimpleBLEPeripheral') {
       this.info("Connecting to Simple Peripheral")
       this.manager.stopDeviceScan()
-      this.setState({
-        curDevice: device.localName
-      })
+      
       device.connect()
         .then((device) => {
           this.info("Discovering services and characteristics")
@@ -89,9 +93,10 @@ export default class SensorsComponent extends Component {
       const characteristicW = this.writeUUID(0)
       const characteristicR = this.readUUID(0)
 
+      this.info("readable: " + characteristicR.isReadable)
       //write
       //const characteristic = await device.writeCharacteristicWithResponseForService(
-      //  service, characteristicW, "AQ==" /* 0x01*/
+      //   service, characteristicW, "AQ==" /* 0x01*/
       //)
       //read
       const readCharacteristic = await device.readCharacteristicForService(service,characteristicR);
