@@ -33,6 +33,10 @@ export default class SensorsComponent extends Component {
     }, true);
   }
 
+  componentDidMount() {
+    console.log("Component mounted")
+  }
+
   serviceUUID(num) {
     return this.servicePrefixUUID + num //+ "0" + this.suffixUUID
   }
@@ -60,7 +64,6 @@ export default class SensorsComponent extends Component {
     this.manager.startDeviceScan(null,
                                  null, (error, device) => {
       this.info("Scanning...")
-      console.log(device)
       
       //For chage the device local name.
       this.setState({
@@ -81,8 +84,7 @@ export default class SensorsComponent extends Component {
           return device.discoverAllServicesAndCharacteristics()
         })
         .then((device) => {
-          this.info("reading...")
-          return this.read(device)
+          return this.readFromDevice(device)
         })
         .then(() => {
         }, (error) => {
@@ -92,58 +94,42 @@ export default class SensorsComponent extends Component {
     });
   }
 
-  async read(device) {
+
+  async writeToDevice(device) {
+    const service = this.serviceUUID(0)
+    const characteristicW = this.writeUUID(0)
+
+    //write
+    const characteristic = await device.writeCharacteristicWithResponseForService(
+      service, characteristicW, "AQ==" /* 0x01*/
+    )
+  }
+
+  async readFromDevice(device) {
     
-      const service = this.serviceUUID(0)
-      const characteristicW = this.writeUUID(0)
-      const characteristicR = this.readUUID(0)
+    this.info("Reading from Device...")
 
-      //this.info("readable: " + characteristicR.isReadable)
-      //write
-      //const characteristic = await device.writeCharacteristicWithResponseForService(
-      //   service, characteristicW, "AQ==" /* 0x01*/
-      //)
-      
-      //read
-      const readCharacteristic = await device.readCharacteristicForService(service, characteristicR);
-      const readValue1 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
-      const readValue2 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(2);
-      const readValue3 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(4);
-      const readValue4 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(6);
+    const service = this.serviceUUID(0)
+    const characteristicR = this.readUUID(0)
 
-      //this.updateValue(readcharacteristic.uuid, readcharacteristic.value)
-      
-      //this.setState({
-      //  values: [readValue1, readValue2, readValue3, readValue4]
-      //});
+    //this.info("readable: " + characteristicR.isReadable)
 
-      this.setState({
-        values: {
-          ...this.state.values,
-          spl : readValue1
-        }
-      })
+    //read
+    const readCharacteristic = await device.readCharacteristicForService(service, characteristicR);
+    const readValue1 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
+    const readValue2 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(2);
+    const readValue3 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(4);
+    const readValue4 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(6);
 
-      this.setState({
-        values: {
-          ...this.state.values,
-          average : readValue2
-        }
-      })
-
-      this.setState({
-        values: {
-          ...this.state.values,
-          min : readValue3
-        }
-      })
-
-      this.setState({
-        values: {
-          ...this.state.values,
-          max : readValue4
-        }
-      })
+    this.setState({
+      values: {
+        ...this.state.values,
+        spl : readValue1,
+        average : readValue2,
+        min : readValue3,
+        max : readValue4
+      }
+    })
 
       /*
       device.monitorCharacteristicForService(service, characteristicR, (error, characteristic) => {
@@ -153,6 +139,8 @@ export default class SensorsComponent extends Component {
         }
         this.updateValue(characteristic.uuid, readValueInRawBytes)
       })*/
+      //this.updateValue(readcharacteristic.uuid, readcharacteristic.value)
+
     
   }
   render() {
@@ -165,21 +153,14 @@ export default class SensorsComponent extends Component {
           <Text>{this.state.curDevice}</Text>
           <Button title = "connect" onPress={this.connect} />
           
-          
         </View>
-
-        <View>
-        <Text>{this.state.info}</Text>
-        <Text>{this.state.values.spl}</Text>
-        <Text>{this.state.values.average}</Text>
-        <Text>{this.state.values.min}</Text>
-        <Text>{this.state.values.max}</Text>
-         
-        
+          <View>
+          <Text>{this.state.info}</Text>
+          <Text>{this.state.values.spl}</Text>
+          <Text>{this.state.values.average}</Text>
+          <Text>{this.state.values.min}</Text>
+          <Text>{this.state.values.max}</Text>
         </View>
-
-        
-        
       </View>
     )
   }
