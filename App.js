@@ -10,8 +10,10 @@ export default class SensorsComponent extends Component {
   constructor() {
     super()
     this.manager = new BleManager()
-    this.state = {info: "", values: 0, curDevice: ""}
-    //this.prefixUUID = "F000AA"
+    this.state = {
+      info: "", 
+      values: [], 
+      curDevice: ""}
     this.servicePrefixUUID = "AA0"
     this.prefixUUID = "F000AA"
     this.suffixUUID = "-0451-4000-B000-000000000000"
@@ -88,7 +90,6 @@ export default class SensorsComponent extends Component {
   }
 
   async read(device) {
-    
       const service = this.serviceUUID(0)
       const characteristicW = this.writeUUID(0)
       const characteristicR = this.readUUID(0)
@@ -99,11 +100,15 @@ export default class SensorsComponent extends Component {
       //   service, characteristicW, "AQ==" /* 0x01*/
       //)
       //read
-      const readCharacteristic = await device.readCharacteristicForService(service,characteristicR);
-      const readValueInRawBytes = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
+      const readCharacteristic = await device.readCharacteristicForService(service, characteristicR);
+      const readValue1 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
+      const readValue2 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(2);
+      const readValue3 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(4);
+      const readValue4 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(6);
+
       
       this.setState({
-        values: readValueInRawBytes
+        values: [readValue1, readValue2, readValue3, readValue4]
       });
       /*
       device.monitorCharacteristicForService(service, characteristicR, (error, characteristic) => {
