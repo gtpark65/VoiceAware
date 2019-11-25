@@ -12,19 +12,20 @@ export default class SensorsComponent extends Component {
     this.manager = new BleManager()
     this.state = {
       info: "", 
-      values: {spl: 0, average: 0, min:0, max: 0}, 
+      values: {
+        timeStamp : 0,
+        spl : 0,
+        pitch : 0, 
+        AVGPitch : 0,
+        min:0, 
+        max: 0,
+      },
       curDevice: ""
-
     }
     this.servicePrefixUUID = "AA0"
     this.prefixUUID = "F000AA"
     this.suffixUUID = "-0451-4000-B000-000000000000"
-    this.sensors = {
-      0: "spl value",
-      1: "average",
-      2: "min",
-      3: "max"
-    }
+    
     const subscription = this.manager.onStateChange((state) => {
       if (state === 'PoweredOn') {
           this.scan();
@@ -55,10 +56,11 @@ export default class SensorsComponent extends Component {
   error(message) {
     this.setState({info: "ERROR: " + message})
   }
-
+  /*
   updateValue(key, value) {
     this.setState({values: {...this.state.values, [key]: value}})
   }
+  */
 
   scan() { 
     this.manager.startDeviceScan(null,
@@ -101,48 +103,51 @@ export default class SensorsComponent extends Component {
 
     //write
     const characteristic = await device.writeCharacteristicWithResponseForService(
-      service, characteristicW, "AQ==" /* 0x01*/
+      service, characteristicW, "AQ==" /* decode base64 0x01*/
     )
   }
 
-  async readFromDevice(device) {
+  //async readFromDevice(device)
+  //getSearchList = async (device) =>
+  readFromDevice = async (device) => {
     
     this.info("Reading from Device...")
 
     const service = this.serviceUUID(0)
     const characteristicR = this.readUUID(0)
-
-    //this.info("readable: " + characteristicR.isReadable)
-
+    
     //read
     const readCharacteristic = await device.readCharacteristicForService(service, characteristicR);
     const readValue1 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(0);
     const readValue2 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(2);
     const readValue3 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(4);
     const readValue4 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(6);
+    const readValue5 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(8);
+    const readValue6 = Buffer.from(readCharacteristic.value, 'base64').readUInt16LE(10);
 
     this.setState({
       values: {
         ...this.state.values,
-        spl : readValue1,
-        average : readValue2,
-        min : readValue3,
-        max : readValue4
+        timeStamp : readValue1,
+        spl : readValue2,
+        pitch : readValue3,
+        AVGPitch : readValue4,
+        min : readValue5,
+        max : readValue6
       }
     })
 
-      /*
-      device.monitorCharacteristicForService(service, characteristicR, (error, characteristic) => {
-        if (error) {
-          this.error(error.message)
-          return
-        }
-        this.updateValue(characteristic.uuid, readValueInRawBytes)
-      })*/
-      //this.updateValue(readcharacteristic.uuid, readcharacteristic.value)
-
-    
+    /*
+    device.monitorCharacteristicForService(service, characteristicR, (error, characteristic) => {
+      if (error) {
+        this.error(error.message)
+        return
+      }
+      this.updateValue(characteristic.uuid, characteristic.value)
+    })
+    */
   }
+
   render() {
     
     return (
@@ -151,13 +156,15 @@ export default class SensorsComponent extends Component {
         <Header title = "DEVICE SYNC"/>
         <View style = {styles.deviceList}>
           <Text>{this.state.curDevice}</Text>
-          <Button title = "connect" onPress={this.connect} />
+          <Button title = "read" onPress = {() => this.props.readFromDevice()} />
           
         </View>
           <View>
           <Text>{this.state.info}</Text>
+          <Text>{this.state.values.timeStamp}</Text>
           <Text>{this.state.values.spl}</Text>
-          <Text>{this.state.values.average}</Text>
+          <Text>{this.state.values.pitch}</Text>
+          <Text>{this.state.values.AVGPitch}</Text>
           <Text>{this.state.values.min}</Text>
           <Text>{this.state.values.max}</Text>
         </View>
