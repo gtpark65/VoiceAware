@@ -44,7 +44,7 @@ export class DashboardScreen extends Component {
 
   componentDidMount() {
     console.log("Dashboard Component Mounted")
-    this.interval = setInterval(() => this.readFromDevice(this.connectedDevice), 2000);
+    this.interval = setInterval(() => this.readFromDevice(this.connectedDevice), 5000);
   }
 
   componentWillUnmount() {
