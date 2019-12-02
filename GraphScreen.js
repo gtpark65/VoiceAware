@@ -11,13 +11,13 @@ export class GraphScreen extends React.PureComponent {
     static navigationOptions = {
         title: 'Graph History',
     };
+    
     render() {
-        // const data = [50, 30, 40, 85, 50, 65, 85, 91, 35, 53, 24, 50, 75, 80]
         const dataLine = {
-            labels: ['12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00'],
+            labels: ['1:15', '1:30', '1:45', '2:00', '2:15', '2:30', '2:45', '3:00', '3:15', '3:30'],
             datasets: [
               {
-                data: [40, 45, 30, 80, 85, 60, 55],
+                data: [43.2, 32.4, 50.6, 57.6, 73.2, 68.1, 43.2, 48.3, 35.6, 37.8],
                 strokeWidth: 3, // optional
               },
             ],
@@ -25,18 +25,8 @@ export class GraphScreen extends React.PureComponent {
         return (
             <View style={{ flex: 1, justifyContent: "center"}}>
                 <View style={{alignItems: "center"}}>
-                    <Text style={{fontSize: 20}} >Vocal SPL Readings</Text>
+                    <Text style={{fontSize: 20}} > Avg. SPL Readings (dB) vs Time</Text>
                 </View>
-
-                {/* <LineChart
-                    style={{ height: 600 }}
-                    data={data}
-                    svg={{ stroke: 'rgb(0, 51, 160)' }}
-                    contentInset={{ top: 20, left: 20, right: 20, bottom: 20 }}
-                    numberOfTicks={20}
-                >
-                <Grid />
-                </LineChart> */}
 
                 <LineChart
                 data={dataLine}

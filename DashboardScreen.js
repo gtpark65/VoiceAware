@@ -154,10 +154,10 @@ export class DashboardScreen extends Component {
   
   render() {
     const dataLine = {
-      labels: ['12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00'],
+      labels: ['3:30', '3:31', '3:32', '3:33', '3:34', '3:35', '3:36', '3:37'],
       datasets: [
         {
-          data: [40, 45, 30, 80, 85, 60, 55],
+          data: [35, 37, 32, 30, 42, 45, 43, 41],
           strokeWidth: 3, // optional
         },
       ],
