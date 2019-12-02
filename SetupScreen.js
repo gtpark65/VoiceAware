@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, Button, TextInput } from 'react-native';
+import { Text, View, Button, TextInput, StyleSheet } from 'react-native';
 
 export class SetupScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       text: '',
-      fullname: 'Full',
+      fullname: '',
       gender: '',
       email: '',
       password: '',
@@ -27,35 +27,39 @@ export class SetupScreen extends Component {
         <View style={{flex: 1, justifyContent: 'center'}}>
           <Text style={{margin: 20, fontSize: 20}}>Please enter your information to setup your profile:</Text> 
 
-          <View style={{flex: 1, justifyContent: 'space-around'}}>
-
+          <View style={{flex: 1, justifyContent: 'flex-start'}}>
             <TextInput
-                style={{height: 20, margin: 20}}
+                style={TextStyles.TI}
                 placeholder="Full Name"
+                placeholderTextColor="#908887"
                 onChangeText={(fullname) => this.setState({fullname})}
                 value={this.state.fullname}
             /> 
             <TextInput
-                style={{height: 20, margin: 20}}
+                style={TextStyles.TI}
                 placeholder="Gender"
+                placeholderTextColor="#908887"
                 onChangeText={(gender) => this.setState({gender})}
                 value={this.state.gender}
             /> 
             <TextInput
-                style={{height: 20, margin: 20}}
+                style={TextStyles.TI}
                 placeholder="Email"
+                placeholderTextColor="#908887"
                 onChangeText={(email) => this.setState({email})}
                 value={this.state.email}
             /> 
             <TextInput
-                style={{height: 20, margin: 20}}
+                style={TextStyles.TI}
                 placeholder="Password"
+                placeholderTextColor="#908887"
                 onChangeText={(password) => this.setState({password})}
                 value={this.state.password}
             /> 
             <TextInput
-                style={{height: 20, margin: 20}}
+                style={TextStyles.TI}
                 placeholder="Vocal Threshold"
+                placeholderTextColor="#908887"
                 onChangeText={(threshold) => this.setState({threshold})}
                 value={this.state.threshold}
             /> 
@@ -73,3 +77,13 @@ export class SetupScreen extends Component {
     );
   }
 }
+
+const TextStyles = StyleSheet.create({
+  TI: {
+    height: 20, 
+    margin: 20, 
+    color: 'black', 
+    borderBottomColor: 'gray', 
+    borderBottomWidth: 2
+  }
+});
