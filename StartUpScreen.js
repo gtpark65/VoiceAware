@@ -8,7 +8,7 @@ async function requestCoarsePermission() {
       {
         title: 'Voice Aware Permission',
         message:
-          'Cool needs Coarse Location access for BLE functionality',
+          'Voice Aware needs Coarse Location Access for BLE functionality',
         buttonNegative: 'Deny',
         buttonPositive: 'Accept',
       },
@@ -51,7 +51,7 @@ export class StartUpScreen extends Component {
           <Button
             title="Login"
             color="rgb(0, 51, 160)"
-            onPress={this.onPressButton}
+            onPress={() => this.props.navigation.navigate('Dash')}
           />
         </View>
         <View style={styles.buttonContainer}>
