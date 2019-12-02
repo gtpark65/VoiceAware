@@ -13,7 +13,12 @@
     "buffer": "^5.4.3",
     "react": "16.9.0",
     "react-native": "0.61.2",
-    "react-native-ble-plx": "^1.1.0"
+    "react-native-ble-plx": "^1.1.0",
+    "react-native-chart-kit": "^4.1.0",
+    "react-native-gesture-handler": "^1.5.2",
+    "react-native-svg": "^9.13.3",
+    "react-navigation": "^4.0.10",
+    "react-navigation-stack": "^1.10.3"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
